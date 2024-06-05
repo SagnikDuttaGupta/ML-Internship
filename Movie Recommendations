@@ -1,0 +1,26 @@
+# Import necessary libraries
+from surprise import Dataset, Reader
+from surprise import KNNBasic
+from surprise.model_selection import train_test_split
+from surprise import accuracy
+
+# Load data
+# Assuming the data is in a CSV file with columns: userId, movieId, rating
+reader = Reader(line_format='user item rating', sep=',')
+data = Dataset.load_from_file('ratings.csv', reader=reader)
+
+# Split the data into train and test sets
+trainset, testset = train_test_split(data, test_size=0.2)
+
+# Use user-based collaborative filtering
+sim_options = {'name': 'cosine', 'user_based': True}
+model = KNNBasic(sim_options=sim_options)
+
+# Train the model
+model.fit(trainset)
+
+# Make predictions
+predictions = model.test(testset)
+
+# Evaluate the model
+accuracy.rmse(predictions)
